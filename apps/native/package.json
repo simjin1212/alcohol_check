@@ -11,13 +11,13 @@
     "dev": "yarn start"
   },
   "dependencies": {
-    "expo": "^45.0.6",
+    "expo": "48.0.0",
     "expo-status-bar": "~1.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-native": "0.68.2",
     "react-native-web": "^0.18.9",
-    "ui": "workspace:*"
+    "ui": "*"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

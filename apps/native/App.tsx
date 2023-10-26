@@ -8,10 +8,10 @@ export default function Native() {
       <Text style={styles.header}>Native</Text>
       <Button
         onClick={() => {
-          console.log("Pressed!");
-          alert("Pressed!");
+          console.log("hello World");
+          alert("hello World");
         }}
-        text="이건뭐임요"
+        text="Boop"
       />
       <StatusBar style="auto" />
     </View>

@@ -1,11 +1,24 @@
-import { StyleSheet, Text, View } from "react-native";
-import { StatusBar } from "expo-status-bar";
-import { Button } from "ui";
+import * as Permissions from "expo-permissions";
+import { StyleSheet, View } from "react-native";
 
-export default function Native() {
+import React from "react";
+import { LoadingView } from "./src/LoadingView";
+import { useTensorFlowLoaded } from "./src/useTensorFlow";
+import { ModelView } from "./src/ModelView";
+export default function App() {
+  const isLoaded = useTensorFlowLoaded();
+  const [status] = Permissions.usePermissions(Permissions.CAMERA, {
+    ask: true,
+  });
+  if (!(status || {}).granted) {
+    return <LoadingView>Camera permission is required to continue</LoadingView>;
+  }
+  if (!isLoaded) {
+    return <LoadingView>Loading TensorFlow</LoadingView>;
+  }
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Native</Text>
+      {/* <Text style={styles.header}>Native</Text>
       <Button
         onClick={() => {
           console.log("hello World");
@@ -13,7 +26,8 @@ export default function Native() {
         }}
         text="Boop"
       />
-      <StatusBar style="auto" />
+      <StatusBar style="auto" /> */}
+      <ModelView />
     </View>
   );
 }

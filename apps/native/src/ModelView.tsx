@@ -1,14 +1,14 @@
 import * as posenet from "@tensorflow-models/posenet";
 import { Camera } from "expo-camera";
 import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, useWindowDimensions, View } from "react-native";
+import { StyleSheet, View, useWindowDimensions } from "react-native";
 
+import Canvas from "react-native-canvas";
 import { CustomTensorCamera } from "./CustomTensorCamera";
 import { LoadingView } from "./LoadingView";
-import { PredictionList } from "./PredictionList";
-import { useTensorFlowModel } from "./useTensorFlow";
-import Canvas from "react-native-canvas";
 import { TensorKeypoint } from "./tenser-types";
+import { useTensorFlowModel } from "./useTensorFlow";
+import { check_HandsUp, check_O, check_X } from "./pose-validation";
 
 export function ModelView() {
   const model = useTensorFlowModel(posenet);
@@ -19,9 +19,7 @@ export function ModelView() {
   }
 
   return (
-    <View
-    // style={{ flex: 1, backgroundColor: "black", justifyContent: "center" }}
-    >
+    <View style={{ flex: 1, borderColor: "blue" }}>
       {/* <PredictionList predictions={predictions} /> */}
       {/* <View style={{ borderRadius: 20, overflow: "hidden" }}> */}
       <ModelCamera
@@ -61,8 +59,6 @@ function ModelCamera({ model, setPredictions, predictions }: any) {
         // drawMultiplePosesResults();
         await setPredictions(predictions);
 
-        //@ts-ignore
-        await setTensorXyPostion(predictions.keyPoints);
         // @ts-ignore
         raf.current = requestAnimationFrame(loop);
       };
@@ -72,20 +68,39 @@ function ModelCamera({ model, setPredictions, predictions }: any) {
   );
 
   const onCanvasDraw = (canvas: Canvas, tensorXyPostion: TensorKeypoint[]) => {
-    canvas.width = size.width;
-    canvas.height = size.height;
+    const canvasWidth = size.width;
+    const canvasHeight = size.height - 180;
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
     const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (canvas === null) return;
+    if (!tensorXyPostion) return;
 
-    console.log(tensorXyPostion);
-    // for (let i = 0; i < 17; i++) {
-    //   let el = tensorXyPostion[i];
-    //   if (!el) return;
-    //   ctx.fillStyle = "red"; // 점의 색상
-    //   ctx.beginPath();
-    //   // ctx.arc(el.position.x, el.position.y, 5, 0, 2 * Math.PI); // 점의 중심 좌표와 반지름
-    //   ctx.fill();
-    // }
+    for (let i = 0; i < 17; i++) {
+      let el = tensorXyPostion[i];
+      if (!el) return;
+      ctx.fillStyle = "red"; // 점의 색상
+      ctx.beginPath();
+
+      // const canvasX = el.position?.x ?? 0 * canvas.width;
+      // const canvasY = el.position?.y ?? 0 * canvas.height;
+
+      // TODO:: posenet이 가운데를 0,0 으로 인식하는거로 추정 그로인한 좌표계산
+      const canvasX = canvas.width / 2;
+      const canvasY = canvas.height / 2;
+      if (el.position?.x === undefined) return;
+      if (el.position?.y === undefined) return;
+      const x = canvasX - el.position?.x;
+      const y = canvasY + el.position?.y;
+
+      console.log("x", x);
+      console.log("y", y);
+      if (el?.score ?? 0 > 0.9) {
+        ctx.arc(x, y, 5, 0, 2 * Math.PI); // 점의 중심 좌표와 반지름
+      }
+      ctx.fill();
+    }
 
     ctx.strokeStyle = "red";
     ctx.lineWidth = 2;
@@ -93,12 +108,14 @@ function ModelCamera({ model, setPredictions, predictions }: any) {
   };
 
   useEffect(() => {
-    // console.log(predictions);
-    console.log(tensorXyPostion);
+    // if (check_HandsUp(predictions)) return;
+    // if (check_O(predictions)) return;
+    // if (check_X(predictions)) return;
+    setTensorXyPostion(predictions.keypoints);
     if (canvasRef.current) {
       onCanvasDraw(canvasRef.current, tensorXyPostion);
     }
-  }, [tensorXyPostion]);
+  }, [predictions]);
 
   return React.useMemo(
     () => (
@@ -134,26 +151,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-// const tmp = {
-//   keypoints: [
-//     { part: "nose", position: [Object], score: 0.99853515625 },
-//     { part: "leftEye", position: [Object], score: 0.9931640625 },
-//     { part: "rightEye", position: [Object], score: 0.99951171875 },
-//     { part: "leftEar", position: [Object], score: 0.10595703125 },
-//     { part: "rightEar", position: [Object], score: 0.990234375 },
-//     { part: "leftShoulder", position: [Object], score: 0.97509765625 },
-//     { part: "rightShoulder", position: [Object], score: 0.98388671875 },
-//     { part: "leftElbow", position: [Object], score: 0.62744140625 },
-//     { part: "rightElbow", position: [Object], score: 0.92822265625 },
-//     { part: "leftWrist", position: [Object], score: 0.11456298828125 },
-//     { part: "rightWrist", position: [Object], score: 0.54150390625 },
-//     { part: "leftHip", position: [Object], score: 0.260498046875 },
-//     { part: "rightHip", position: [Object], score: 0.16650390625 },
-//     { part: "leftKnee", position: [Object], score: 0.0328369140625 },
-//     { part: "rightKnee", position: [Object], score: 0.04779052734375 },
-//     { part: "leftAnkle", position: [Object], score: 0.01495361328125 },
-//     { part: "rightAnkle", position: [Object], score: 0.0225067138671875 },
-//   ],
-//   score: 0.5178357292624081,
-// };

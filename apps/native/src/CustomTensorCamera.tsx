@@ -1,8 +1,9 @@
 import { cameraWithTensors } from "@tensorflow/tfjs-react-native";
 import { Camera } from "expo-camera";
+import Canvas from "react-native-canvas";
 import React from "react";
 
-const TEXTURE_SIZE = { width: 1080, height: 1920 };
+const TEXTURE_SIZE = { width: 1080, height: 2100 };
 
 const TENSOR_WIDTH = 152;
 
@@ -29,14 +30,16 @@ export function CustomTensorCamera({ style, width, ...props }: any) {
   }, [width]);
 
   return (
-    <TensorCamera
-      {...props}
-      style={[style, sizeStyle]}
-      cameraTextureWidth={TEXTURE_SIZE.width}
-      cameraTextureHeight={TEXTURE_SIZE.height}
-      resizeWidth={TENSOR_SIZE.width}
-      resizeHeight={TENSOR_SIZE.height}
-      resizeDepth={3}
-    />
+    <>
+      <TensorCamera
+        {...props}
+        style={[style, sizeStyle]}
+        cameraTextureWidth={TEXTURE_SIZE.width}
+        cameraTextureHeight={TEXTURE_SIZE.height}
+        resizeWidth={TENSOR_SIZE.width}
+        resizeHeight={TENSOR_SIZE.height}
+        resizeDepth={3}
+      />
+    </>
   );
 }

@@ -18,15 +18,6 @@ export default function App() {
   }
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.header}>Native</Text>
-      <Button
-        onClick={() => {
-          console.log("hello World");
-          alert("hello World");
-        }}
-        text="Boop"
-      />
-      <StatusBar style="auto" /> */}
       <ModelView />
     </View>
   );
@@ -41,7 +32,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontWeight: "bold",
-    marginBottom: 20,
+    // marginBottom: 20,
     fontSize: 36,
   },
 });

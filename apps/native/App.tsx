@@ -1,22 +1,15 @@
-import * as Permissions from "expo-permissions";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 
-import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationContainer } from "@react-navigation/native";
+import React from "react";
 
-import { LoadingView } from "./src/LoadingView";
 import { MenuView } from "./src/MenuView";
-import { useTensorFlowLoaded } from "./src/useTensorFlow";
 import { ModelView } from "./src/ModelView";
 
 const Tab = createBottomTabNavigator();
 
 export default function App() {
-  const isLoaded = useTensorFlowLoaded();
-  const [status] = Permissions.usePermissions(Permissions.CAMERA, {
-    ask: true,
-  });
   // if (!(status || {}).granted) {
   //   return <LoadingView>Camera permission is required to continue</LoadingView>;
   // }
